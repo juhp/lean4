@@ -75,6 +75,7 @@ option(USE_GMP "USE_GMP" ON)
 # development-specific options
 option(CHECK_OLEAN_VERSION "Only load .olean files compiled with the current version of Lean" OFF)
 option(USE_LAKE "Use Lake instead of lean.mk for building core libs from language server" OFF)
+option(COPY_CADICAL "Install a copy of cadical" ON)
 
 set(LEAN_EXTRA_MAKE_OPTS  ""                           CACHE STRING "extra options to lean --make")
 set(LEANC_CC              ${CMAKE_C_COMPILER}          CACHE STRING "C compiler to use in `leanc`")
@@ -614,7 +615,7 @@ else()
     OUTPUT_NAME leancpp)
 endif()
 
-if((${STAGE} GREATER 0) AND CADICAL)
+if((${STAGE} GREATER 0) AND CADICAL AND COPY_CADICAL)
   add_custom_target(copy-cadical
     COMMAND cmake -E copy_if_different "${CADICAL}" "${CMAKE_BINARY_DIR}/bin/cadical${CMAKE_EXECUTABLE_SUFFIX}")
   add_dependencies(leancpp copy-cadical)
@@ -736,7 +737,7 @@ file(COPY ${LEAN_SOURCE_DIR}/bin/leanmake DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
 install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/" USE_SOURCE_PERMISSIONS DESTINATION bin)
 
-if (${STAGE} GREATER 0 AND CADICAL)
+if (${STAGE} GREATER 0 AND CADICAL AND COPY_CADICAL)
   install(PROGRAMS "${CADICAL}" DESTINATION bin)
 endif()
 
